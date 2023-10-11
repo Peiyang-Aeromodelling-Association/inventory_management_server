@@ -41,6 +41,7 @@ test:
 
 .PHONY: help postgres createdb dropdb migrateup migratedown
 
+.DEFAULT_GOAL := help
 all: help
 help: Makefile
 	@echo
