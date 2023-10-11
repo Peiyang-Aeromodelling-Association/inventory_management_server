@@ -2,25 +2,35 @@ package db
 
 import (
 	"database/sql"
-	_ "github.com/jackc/pgx/v5/pgxpool"
-	_ "github.com/lib/pq"
 	"log"
 	"os"
 	"testing"
+
+	"github.com/Peiyang-Aeromodelling-Association/inventory_management_server/util"
+
+	_ "github.com/lib/pq"
 )
 
 // read secret from environment variables
 var dbSecret string
-var dbDriver = "postgres"
-var dbSource = "postgresql://root:" + dbSecret + "@localhost:5432/simple_bank?sslmode=disable"
 
 var testQueries *Queries
 
 func init() {
-	dbSecret = os.Getenv("POSTGRES_PASSWORD")
+	secretConfig := util.SecretConfig{}
+
+	err := util.LoadConfig(&secretConfig, "../../")
+	if err != nil {
+		log.Fatal("cannot load secret config: ", err)
+	}
+
+	dbSecret = secretConfig.PostgresPassword
 }
 
 func TestMain(m *testing.M) {
+	var dbDriver = "postgres"
+	var dbSource = "postgresql://postgres:" + dbSecret + "@localhost:5432/inventory_management_server_db?sslmode=disable"
+
 	// connect to database
 	conn, err := sql.Open(dbDriver, dbSource)
 	if err != nil {

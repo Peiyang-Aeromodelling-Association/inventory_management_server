@@ -31,8 +31,13 @@ migrateup:
 migratedown:
 	echo 'y' | migrate -path db/migration -database "$(DB_URL)" -verbose down
 
+## sqlc: Generate sqlc
 sqlc:
 	sqlc generate
+
+## test: Run test
+test:
+	go test -v -cover ./...
 
 .PHONY: help postgres createdb dropdb migrateup migratedown
 
