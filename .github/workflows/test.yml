@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions:
+  contents: write
+
 env:
   POSTGRES_USER: postgres
   POSTGRES_DB: inventory_management_server_db
@@ -86,5 +89,5 @@ jobs:
       if: steps.verify-changed-files.outputs.files_changed == 'true'
       uses: ad-m/github-push-action@master
       with:
-        github_token: ${{ github.token }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
         branch: ${{ github.head_ref }}
