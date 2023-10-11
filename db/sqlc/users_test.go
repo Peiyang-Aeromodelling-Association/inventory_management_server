@@ -137,6 +137,8 @@ func TestUpdateUser(t *testing.T) {
 	// get the user by username
 	user2, err := testQueries.GetUserByUsername(context.Background(), user.Username)
 
+	require.NoError(t, err)
+
 	// update the user
 	arg2 := UpdateUserParams{
 		Uid:       user2.Uid,
