@@ -7,3 +7,5 @@
 .idea
 
 secret.env
+
+coverage.out

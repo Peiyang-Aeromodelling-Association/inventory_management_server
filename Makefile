@@ -39,7 +39,10 @@ sqlc:
 test:
 	go test -v -cover ./...
 
-.PHONY: help postgres createdb dropdb migrateup migratedown
+## wipedb: Drop tables and create tables
+wipedb: migratedown migrateup
+
+.PHONY: help postgres createdb dropdb migrateup migratedown sqlc test dbclean
 
 .DEFAULT_GOAL := help
 all: help
