@@ -15,6 +15,7 @@ import (
 var dbSecret string
 
 var testQueries *Queries
+var testDB *sql.DB
 
 func init() {
 	secretConfig := util.SecretConfig{}
@@ -28,16 +29,18 @@ func init() {
 }
 
 func TestMain(m *testing.M) {
+	var err error
+
 	var dbDriver = "postgres"
 	var dbSource = "postgresql://postgres:" + dbSecret + "@localhost:5432/inventory_management_server_db?sslmode=disable"
 
 	// connect to database
-	conn, err := sql.Open(dbDriver, dbSource)
+	testDB, err = sql.Open(dbDriver, dbSource)
 	if err != nil {
 		log.Fatal("cannot connect to db: ", err)
 	}
 
-	testQueries = New(conn)
+	testQueries = New(testDB)
 
 	os.Exit(m.Run())
 }

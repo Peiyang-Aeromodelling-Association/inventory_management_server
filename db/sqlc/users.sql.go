@@ -22,14 +22,14 @@ type CreateUserParams struct {
 	Activated bool   `json:"activated"`
 }
 
-func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (Users, error) {
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
 	row := q.db.QueryRowContext(ctx, createUser,
 		arg.Username,
 		arg.Password,
 		arg.Role,
 		arg.Activated,
 	)
-	var i Users
+	var i User
 	err := row.Scan(
 		&i.Uid,
 		&i.Username,
@@ -46,9 +46,9 @@ FROM users
 WHERE username = $1
 `
 
-func (q *Queries) GetUserByUsername(ctx context.Context, username string) (Users, error) {
+func (q *Queries) GetUserByUsername(ctx context.Context, username string) (User, error) {
 	row := q.db.QueryRowContext(ctx, getUserByUsername, username)
-	var i Users
+	var i User
 	err := row.Scan(
 		&i.Uid,
 		&i.Username,
@@ -66,9 +66,9 @@ WHERE username = $1
     FOR NO KEY UPDATE
 `
 
-func (q *Queries) GetUserByUsernameForUpdate(ctx context.Context, username string) (Users, error) {
+func (q *Queries) GetUserByUsernameForUpdate(ctx context.Context, username string) (User, error) {
 	row := q.db.QueryRowContext(ctx, getUserByUsernameForUpdate, username)
-	var i Users
+	var i User
 	err := row.Scan(
 		&i.Uid,
 		&i.Username,
@@ -91,15 +91,15 @@ type ListUsersParams struct {
 	Offset int32 `json:"offset"`
 }
 
-func (q *Queries) ListUsers(ctx context.Context, arg ListUsersParams) ([]Users, error) {
+func (q *Queries) ListUsers(ctx context.Context, arg ListUsersParams) ([]User, error) {
 	rows, err := q.db.QueryContext(ctx, listUsers, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []Users{}
+	items := []User{}
 	for rows.Next() {
-		var i Users
+		var i User
 		if err := rows.Scan(
 			&i.Uid,
 			&i.Username,
@@ -138,7 +138,7 @@ type UpdateUserParams struct {
 	Activated bool   `json:"activated"`
 }
 
-func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (Users, error) {
+func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
 	row := q.db.QueryRowContext(ctx, updateUser,
 		arg.Uid,
 		arg.Username,
@@ -146,7 +146,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (Users, 
 		arg.Role,
 		arg.Activated,
 	)
-	var i Users
+	var i User
 	err := row.Scan(
 		&i.Uid,
 		&i.Username,

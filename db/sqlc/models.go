@@ -21,7 +21,7 @@ type History struct {
 	Deleted          bool           `json:"deleted"`
 }
 
-type Items struct {
+type Item struct {
 	ItemID           int32          `json:"item_id"`
 	IdentifierCode   string         `json:"identifier_code"`
 	Name             string         `json:"name"`
@@ -32,13 +32,13 @@ type Items struct {
 	Deleted          bool           `json:"deleted"`
 }
 
-type Tokens struct {
+type Token struct {
 	Token      string    `json:"token"`
 	Uid        int32     `json:"uid"`
 	ValidUntil time.Time `json:"valid_until"`
 }
 
-type Users struct {
+type User struct {
 	Uid       int32  `json:"uid"`
 	Username  string `json:"username"`
 	Password  string `json:"password"`

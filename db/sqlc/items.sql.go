@@ -24,7 +24,7 @@ type CreateItemParams struct {
 	Description    sql.NullString `json:"description"`
 }
 
-func (q *Queries) CreateItem(ctx context.Context, arg CreateItemParams) (Items, error) {
+func (q *Queries) CreateItem(ctx context.Context, arg CreateItemParams) (Item, error) {
 	row := q.db.QueryRowContext(ctx, createItem,
 		arg.IdentifierCode,
 		arg.Name,
@@ -32,7 +32,7 @@ func (q *Queries) CreateItem(ctx context.Context, arg CreateItemParams) (Items, 
 		arg.Modifier,
 		arg.Description,
 	)
-	var i Items
+	var i Item
 	err := row.Scan(
 		&i.ItemID,
 		&i.IdentifierCode,
@@ -60,9 +60,9 @@ type DeleteItemParams struct {
 	Modifier int32 `json:"modifier"`
 }
 
-func (q *Queries) DeleteItem(ctx context.Context, arg DeleteItemParams) (Items, error) {
+func (q *Queries) DeleteItem(ctx context.Context, arg DeleteItemParams) (Item, error) {
 	row := q.db.QueryRowContext(ctx, deleteItem, arg.ItemID, arg.Modifier)
-	var i Items
+	var i Item
 	err := row.Scan(
 		&i.ItemID,
 		&i.IdentifierCode,
@@ -88,15 +88,15 @@ type GetItemsByHolderParams struct {
 	Deleted bool  `json:"deleted"`
 }
 
-func (q *Queries) GetItemsByHolder(ctx context.Context, arg GetItemsByHolderParams) ([]Items, error) {
+func (q *Queries) GetItemsByHolder(ctx context.Context, arg GetItemsByHolderParams) ([]Item, error) {
 	rows, err := q.db.QueryContext(ctx, getItemsByHolder, arg.Holder, arg.Deleted)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []Items{}
+	items := []Item{}
 	for rows.Next() {
-		var i Items
+		var i Item
 		if err := rows.Scan(
 			&i.ItemID,
 			&i.IdentifierCode,
@@ -132,9 +132,9 @@ type GetItemsByIdentifierCodeParams struct {
 	Deleted        bool   `json:"deleted"`
 }
 
-func (q *Queries) GetItemsByIdentifierCode(ctx context.Context, arg GetItemsByIdentifierCodeParams) (Items, error) {
+func (q *Queries) GetItemsByIdentifierCode(ctx context.Context, arg GetItemsByIdentifierCodeParams) (Item, error) {
 	row := q.db.QueryRowContext(ctx, getItemsByIdentifierCode, arg.IdentifierCode, arg.Deleted)
-	var i Items
+	var i Item
 	err := row.Scan(
 		&i.ItemID,
 		&i.IdentifierCode,
@@ -161,9 +161,9 @@ type GetItemsByIdentifierCodeForUpdateParams struct {
 	Deleted        bool   `json:"deleted"`
 }
 
-func (q *Queries) GetItemsByIdentifierCodeForUpdate(ctx context.Context, arg GetItemsByIdentifierCodeForUpdateParams) (Items, error) {
+func (q *Queries) GetItemsByIdentifierCodeForUpdate(ctx context.Context, arg GetItemsByIdentifierCodeForUpdateParams) (Item, error) {
 	row := q.db.QueryRowContext(ctx, getItemsByIdentifierCodeForUpdate, arg.IdentifierCode, arg.Deleted)
-	var i Items
+	var i Item
 	err := row.Scan(
 		&i.ItemID,
 		&i.IdentifierCode,
@@ -184,9 +184,9 @@ WHERE item_id = $1
     FOR NO KEY UPDATE
 `
 
-func (q *Queries) GetItemsByItemIdForUpdate(ctx context.Context, itemID int32) (Items, error) {
+func (q *Queries) GetItemsByItemIdForUpdate(ctx context.Context, itemID int32) (Item, error) {
 	row := q.db.QueryRowContext(ctx, getItemsByItemIdForUpdate, itemID)
-	var i Items
+	var i Item
 	err := row.Scan(
 		&i.ItemID,
 		&i.IdentifierCode,
@@ -212,15 +212,15 @@ type GetItemsByNameParams struct {
 	Deleted bool   `json:"deleted"`
 }
 
-func (q *Queries) GetItemsByName(ctx context.Context, arg GetItemsByNameParams) ([]Items, error) {
+func (q *Queries) GetItemsByName(ctx context.Context, arg GetItemsByNameParams) ([]Item, error) {
 	rows, err := q.db.QueryContext(ctx, getItemsByName, arg.Name, arg.Deleted)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []Items{}
+	items := []Item{}
 	for rows.Next() {
-		var i Items
+		var i Item
 		if err := rows.Scan(
 			&i.ItemID,
 			&i.IdentifierCode,

@@ -11,7 +11,7 @@ import (
 func TestCreateUser(t *testing.T) {
 	// create a new user
 	arg := CreateUserParams{
-		Username:  "testuser",
+		Username:  "testcreateuser",
 		Password:  "testpassword",
 		Role:      "testrole",
 		Activated: true,
@@ -33,7 +33,7 @@ func TestCreateUser(t *testing.T) {
 func TestGetUserByUsername(t *testing.T) {
 	// create a new user
 	arg := CreateUserParams{
-		Username:  "testuserwithusername",
+		Username:  "testgetuserwithusername",
 		Password:  "testpassword",
 		Role:      "testrole",
 		Activated: true,

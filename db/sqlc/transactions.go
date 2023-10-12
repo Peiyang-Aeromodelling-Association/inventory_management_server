@@ -41,8 +41,8 @@ func (transaction *Transaction) ExecTx(ctx context.Context, fn func(*Queries) er
 // below are specific transaction functions
 
 // CreateItemTx is a transaction function that creates an item and its history
-func (transaction *Transaction) CreateItemTx(ctx context.Context, arg CreateItemParams) (Items, error) {
-	var result Items
+func (transaction *Transaction) CreateItemTx(ctx context.Context, arg CreateItemParams) (Item, error) {
+	var result Item
 	execErr := transaction.ExecTx(ctx, func(q *Queries) error {
 		// 1. create item
 		var createErr error
@@ -76,50 +76,54 @@ type DeleteItemsByIdentifierCodeForUpdateParams struct {
 	Modifier int32 `json:"modifier"`
 }
 
-// // DeleteItemByIdentifierCodeTx is a transaction function that sets an item as deleted and create a new history entry
-// func (transaction *Transaction) DeleteItemByIdentifierCodeTx(ctx context.Context, arg DeleteItemsByIdentifierCodeForUpdateParams) (Items, error) {
-// 	var result Items
-// 	execErr := transaction.ExecTx(ctx, func(q *Queries) error {
-// 		// 1. get item id by identifier code
-// 		var getItemErr error
-// 		result, getItemErr = q.GetItemsByIdentifierCodeForUpdate(ctx, arg) // TODO: need bug fix
+// DeleteItemByIdentifierCodeTx is a transaction function that sets an item as deleted and create a new history entry
+func (transaction *Transaction) DeleteItemByIdentifierCodeTx(ctx context.Context, arg DeleteItemsByIdentifierCodeForUpdateParams) (Item, error) {
+	var result Item
+	execErr := transaction.ExecTx(ctx, func(q *Queries) error {
+		// 1. get item id by identifier code
+		var getItemErr error
 
-// 		if getItemErr != nil {
-// 			return getItemErr
-// 		}
+		// make sure Deleted is false
+		arg.Deleted = false
 
-// 		// 1.2 if Deleted is true, return nil as finished
-// 		if result.Deleted {
-// 			return nil
-// 		}
+		result, getItemErr = q.GetItemsByIdentifierCodeForUpdate(ctx, arg.GetItemsByIdentifierCodeForUpdateParams) // TODO: need bug fix
 
-// 		// 2. delete item
-// 		var deleteErr error
-// 		_, deleteErr = q.DeleteItem(ctx, DeleteItemParams{
-// 			ItemID:   result.ItemID,
-// 			Modifier: arg.Modifier,
-// 		})
+		if getItemErr != nil {
+			return getItemErr
+		}
 
-// 		if deleteErr != nil {
-// 			return deleteErr
-// 		}
+		// 1.2 if Deleted is true, return nil as finished
+		if result.Deleted {
+			return nil
+		}
 
-// 		// 3. create history
-// 		var historyArg CreateHistoryParams
+		// 2. delete item
+		var deleteErr error
+		result, deleteErr = q.DeleteItem(ctx, DeleteItemParams{
+			ItemID:   result.ItemID,
+			Modifier: arg.Modifier,
+		})
 
-// 		historyArg.ItemID = result.ItemID
-// 		historyArg.IdentifierCode = result.IdentifierCode
-// 		historyArg.Name = result.Name
-// 		historyArg.Holder = result.Holder
-// 		historyArg.ModificationTime = result.ModificationTime
-// 		historyArg.Modifier = result.Modifier
-// 		historyArg.Description = result.Description
-// 		historyArg.Deleted = result.Deleted
+		if deleteErr != nil {
+			return deleteErr
+		}
 
-// 		_, historyErr := q.CreateHistory(ctx, historyArg)
+		// 3. create history
+		var historyArg CreateHistoryParams
 
-// 		return historyErr
-// 	})
+		historyArg.ItemID = result.ItemID
+		historyArg.IdentifierCode = result.IdentifierCode
+		historyArg.Name = result.Name
+		historyArg.Holder = result.Holder
+		historyArg.ModificationTime = result.ModificationTime
+		historyArg.Modifier = result.Modifier
+		historyArg.Description = result.Description
+		historyArg.Deleted = result.Deleted
 
-// 	return result, execErr
-// }
+		_, historyErr := q.CreateHistory(ctx, historyArg)
+
+		return historyErr
+	})
+
+	return result, execErr
+}
