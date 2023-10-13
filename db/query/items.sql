@@ -42,3 +42,13 @@ FROM items
 WHERE holder = $1
   AND deleted = $2;
 
+-- name: UpdateItem :one
+UPDATE items
+SET identifier_code   = $2,
+    name              = $3,
+    holder            = $4,
+    modification_time = CURRENT_TIMESTAMP,
+    modifier          = $5,
+    description       = $6
+WHERE item_id = $1
+RETURNING *;

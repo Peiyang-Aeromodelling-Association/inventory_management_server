@@ -72,8 +72,8 @@ func (transaction *Transaction) CreateItemTx(ctx context.Context, arg CreateItem
 }
 
 type DeleteItemsByIdentifierCodeForUpdateParams struct {
-	GetItemsByIdentifierCodeForUpdateParams
-	Modifier int32 `json:"modifier"`
+	IdentifierCode string `json:"identifier_code"`
+	Modifier       int32  `json:"modifier"`
 }
 
 // DeleteItemByIdentifierCodeTx is a transaction function that sets an item as deleted and create a new history entry
@@ -84,9 +84,12 @@ func (transaction *Transaction) DeleteItemByIdentifierCodeTx(ctx context.Context
 		var getItemErr error
 
 		// make sure Deleted is false
-		arg.Deleted = false
+		argGetItem := GetItemsByIdentifierCodeForUpdateParams{
+			IdentifierCode: arg.IdentifierCode,
+			Deleted:        false,
+		}
 
-		result, getItemErr = q.GetItemsByIdentifierCodeForUpdate(ctx, arg.GetItemsByIdentifierCodeForUpdateParams) // TODO: need bug fix
+		result, getItemErr = q.GetItemsByIdentifierCodeForUpdate(ctx, argGetItem) // TODO: need bug fix
 
 		if getItemErr != nil {
 			return getItemErr
@@ -106,6 +109,73 @@ func (transaction *Transaction) DeleteItemByIdentifierCodeTx(ctx context.Context
 
 		if deleteErr != nil {
 			return deleteErr
+		}
+
+		// 3. create history
+		var historyArg CreateHistoryParams
+
+		historyArg.ItemID = result.ItemID
+		historyArg.IdentifierCode = result.IdentifierCode
+		historyArg.Name = result.Name
+		historyArg.Holder = result.Holder
+		historyArg.ModificationTime = result.ModificationTime
+		historyArg.Modifier = result.Modifier
+		historyArg.Description = result.Description
+		historyArg.Deleted = result.Deleted
+
+		_, historyErr := q.CreateHistory(ctx, historyArg)
+
+		return historyErr
+	})
+
+	return result, execErr
+}
+
+type UpdateItemByIdentifierCodeParams struct {
+	UpdateItemParams
+	QueryIdentifierCode string
+}
+
+// UpdateItemByIdentifierCodeTx is a transaction function that updates an item and create a new history entry
+func (transaction *Transaction) UpdateItemByIdentifierCodeTx(ctx context.Context, arg UpdateItemByIdentifierCodeParams) (Item, error) {
+	var result Item
+	execErr := transaction.ExecTx(ctx, func(q *Queries) error {
+		// 1. get item id by identifier code
+		var getItemErr error
+
+		// make sure Deleted is false
+		argGetItem := GetItemsByIdentifierCodeForUpdateParams{
+			IdentifierCode: arg.QueryIdentifierCode,
+			Deleted:        false,
+		}
+
+		result, getItemErr = q.GetItemsByIdentifierCodeForUpdate(ctx, argGetItem) // TODO: need bug fix
+
+		if getItemErr != nil {
+			return getItemErr
+		}
+
+		// 1.2 if Deleted is true, return nil as finished
+		if result.Deleted {
+			return nil
+		}
+
+		// 2. update item
+		var updateErr error
+
+		updateArgs := UpdateItemParams{
+			ItemID:         result.ItemID, // ItemID used for querying should be results from previous query step
+			IdentifierCode: arg.IdentifierCode,
+			Name:           arg.Name,
+			Holder:         arg.Holder,
+			Modifier:       arg.Modifier,
+			Description:    arg.Description,
+		}
+
+		result, updateErr = q.UpdateItem(ctx, updateArgs)
+
+		if updateErr != nil {
+			return updateErr
 		}
 
 		// 3. create history

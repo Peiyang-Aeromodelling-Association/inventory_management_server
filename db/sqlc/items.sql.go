@@ -243,3 +243,47 @@ func (q *Queries) GetItemsByName(ctx context.Context, arg GetItemsByNameParams) 
 	}
 	return items, nil
 }
+
+const updateItem = `-- name: UpdateItem :one
+UPDATE items
+SET identifier_code   = $2,
+    name              = $3,
+    holder            = $4,
+    modification_time = CURRENT_TIMESTAMP,
+    modifier          = $5,
+    description       = $6
+WHERE item_id = $1
+RETURNING item_id, identifier_code, name, holder, modification_time, modifier, description, deleted
+`
+
+type UpdateItemParams struct {
+	ItemID         int32          `json:"item_id"`
+	IdentifierCode string         `json:"identifier_code"`
+	Name           string         `json:"name"`
+	Holder         int32          `json:"holder"`
+	Modifier       int32          `json:"modifier"`
+	Description    sql.NullString `json:"description"`
+}
+
+func (q *Queries) UpdateItem(ctx context.Context, arg UpdateItemParams) (Item, error) {
+	row := q.db.QueryRowContext(ctx, updateItem,
+		arg.ItemID,
+		arg.IdentifierCode,
+		arg.Name,
+		arg.Holder,
+		arg.Modifier,
+		arg.Description,
+	)
+	var i Item
+	err := row.Scan(
+		&i.ItemID,
+		&i.IdentifierCode,
+		&i.Name,
+		&i.Holder,
+		&i.ModificationTime,
+		&i.Modifier,
+		&i.Description,
+		&i.Deleted,
+	)
+	return i, err
+}
