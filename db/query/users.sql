@@ -1,14 +1,13 @@
 -- name: CreateUser :one
-INSERT INTO users (username, password, role, activated)
-VALUES ($1, $2, $3, $4)
+INSERT INTO users (username, password, activated)
+VALUES ($1, $2, $3)
 RETURNING *;
 
 -- name: UpdateUser :one
 UPDATE users
 SET username  = $2,
     password  = $3,
-    role      = $4,
-    activated = $5
+    activated = $4
 WHERE uid = $1
 RETURNING *;
 
@@ -26,5 +25,6 @@ WHERE username = $1
 -- name: ListUsers :many
 SELECT *
 FROM users
+WHERE activated = TRUE
 ORDER BY uid
 LIMIT $1 OFFSET $2;

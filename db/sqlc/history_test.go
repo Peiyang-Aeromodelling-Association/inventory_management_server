@@ -13,7 +13,6 @@ func TestCreateHistory(t *testing.T) {
 	argUser := CreateUserParams{
 		Username:  "testuserwithusernameforhistory",
 		Password:  "testpassword",
-		Role:      "testrole",
 		Activated: true,
 	}
 

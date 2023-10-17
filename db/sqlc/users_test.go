@@ -13,7 +13,6 @@ func TestCreateUser(t *testing.T) {
 	arg := CreateUserParams{
 		Username:  "testcreateuser",
 		Password:  "testpassword",
-		Role:      "testrole",
 		Activated: true,
 	}
 
@@ -24,7 +23,6 @@ func TestCreateUser(t *testing.T) {
 
 	require.Equal(t, arg.Username, user.Username)
 	require.Equal(t, arg.Password, user.Password)
-	require.Equal(t, arg.Role, user.Role)
 	require.Equal(t, arg.Activated, user.Activated)
 
 	require.NotZero(t, user.Uid)
@@ -35,7 +33,6 @@ func TestGetUserByUsername(t *testing.T) {
 	arg := CreateUserParams{
 		Username:  "testgetuserwithusername",
 		Password:  "testpassword",
-		Role:      "testrole",
 		Activated: true,
 	}
 
@@ -53,7 +50,6 @@ func TestGetUserByUsername(t *testing.T) {
 	require.Equal(t, user.Uid, user2.Uid)
 	require.Equal(t, user.Username, user2.Username)
 	require.Equal(t, user.Password, user2.Password)
-	require.Equal(t, user.Role, user2.Role)
 	require.Equal(t, user.Activated, user2.Activated)
 }
 
@@ -62,7 +58,6 @@ func TestGetUserByUsernameForUpdate(t *testing.T) {
 	arg := CreateUserParams{
 		Username:  "testuserwithusernameforupdate",
 		Password:  "testpassword",
-		Role:      "testrole",
 		Activated: true,
 	}
 
@@ -80,7 +75,6 @@ func TestGetUserByUsernameForUpdate(t *testing.T) {
 	require.Equal(t, user.Uid, user2.Uid)
 	require.Equal(t, arg.Username, user2.Username)
 	require.Equal(t, arg.Password, user2.Password)
-	require.Equal(t, arg.Role, user2.Role)
 	require.Equal(t, arg.Activated, user2.Activated)
 }
 
@@ -88,9 +82,8 @@ func TestListUsers(t *testing.T) {
 	users := make([]CreateUserParams, 10)
 	for i := 0; i < 10; i++ {
 		users[i] = CreateUserParams{
-			Username:  "testuser" + fmt.Sprintf("%d", i),
+			Username:  "testlistuser" + fmt.Sprintf("%d", i),
 			Password:  "testpassword",
-			Role:      "testrole_listusers",
 			Activated: true,
 		}
 
@@ -109,15 +102,15 @@ func TestListUsers(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEmpty(t, ret_users)
 
-	testrole_listusers_cnt := 0
+	testlistuser_cnt := 0
 	for _, ret_user := range ret_users {
 		require.NotEmpty(t, ret_user)
-		if ret_user.Role == "testrole_listusers" {
-			testrole_listusers_cnt++
+		if ret_user.Username[:12] == "testlistuser" {
+			testlistuser_cnt++
 		}
 	}
 
-	require.Equal(t, 10, testrole_listusers_cnt)
+	require.Equal(t, 10, testlistuser_cnt)
 }
 
 func TestUpdateUser(t *testing.T) {
@@ -125,7 +118,6 @@ func TestUpdateUser(t *testing.T) {
 	arg := CreateUserParams{
 		Username:  "test update user username",
 		Password:  "testpassword",
-		Role:      "testrole",
 		Activated: true,
 	}
 
@@ -144,7 +136,6 @@ func TestUpdateUser(t *testing.T) {
 		Uid:       user2.Uid,
 		Username:  "test update user username updated",
 		Password:  "testpassword updated",
-		Role:      "testrole updated",
 		Activated: false,
 	}
 
@@ -162,6 +153,5 @@ func TestUpdateUser(t *testing.T) {
 	require.Equal(t, user3.Uid, user4.Uid)
 	require.Equal(t, arg2.Username, user4.Username)
 	require.Equal(t, arg2.Password, user4.Password)
-	require.Equal(t, arg2.Role, user4.Role)
 	require.Equal(t, arg2.Activated, user4.Activated)
 }

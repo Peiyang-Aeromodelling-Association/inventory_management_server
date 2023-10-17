@@ -42,6 +42,5 @@ type User struct {
 	Uid       int32  `json:"uid"`
 	Username  string `json:"username"`
 	Password  string `json:"password"`
-	Role      string `json:"role"`
 	Activated bool   `json:"activated"`
 }

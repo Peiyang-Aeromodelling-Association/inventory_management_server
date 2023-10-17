@@ -3,19 +3,8 @@ CREATE TABLE users
     uid       SERIAL PRIMARY KEY,
     username  VARCHAR(255) NOT NULL UNIQUE,
     password  VARCHAR(255) NOT NULL,
-    role      VARCHAR(255) NOT NULL,
     activated BOOLEAN      NOT NULL DEFAULT TRUE -- we don't delete users, we just deactivate them (history f key)
 );
-
--- Tokens are used for authentication with more security and convenience/
--- It's also a workaround for one user having multiple passwords (e.g. webpage login, card id login)
-CREATE TABLE tokens
-(
-    token       TEXT PRIMARY KEY,                          -- token string for authentication
-    uid         INTEGER   NOT NULL REFERENCES users (uid), -- user id of the token owner
-    valid_until TIMESTAMP NOT NULL
-);
-
 
 CREATE TABLE items
 (

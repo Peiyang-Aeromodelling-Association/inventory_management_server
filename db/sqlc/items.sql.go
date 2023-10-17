@@ -244,6 +244,51 @@ func (q *Queries) GetItemsByName(ctx context.Context, arg GetItemsByNameParams) 
 	return items, nil
 }
 
+const listItem = `-- name: ListItem :many
+SELECT item_id, identifier_code, name, holder, modification_time, modifier, description, deleted
+FROM items
+WHERE deleted = FALSE
+ORDER BY item_id
+LIMIT $1 OFFSET $2
+`
+
+type ListItemParams struct {
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+func (q *Queries) ListItem(ctx context.Context, arg ListItemParams) ([]Item, error) {
+	rows, err := q.db.QueryContext(ctx, listItem, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Item{}
+	for rows.Next() {
+		var i Item
+		if err := rows.Scan(
+			&i.ItemID,
+			&i.IdentifierCode,
+			&i.Name,
+			&i.Holder,
+			&i.ModificationTime,
+			&i.Modifier,
+			&i.Description,
+			&i.Deleted,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updateItem = `-- name: UpdateItem :one
 UPDATE items
 SET identifier_code   = $2,

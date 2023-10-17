@@ -35,7 +35,6 @@ func TestDeleteItemByIdentifierCodeTx(t *testing.T) {
 	argCreateUser := CreateUserParams{
 		Username:  "testuserfortestdeleteitem",
 		Password:  "testpassword",
-		Role:      "testrole",
 		Activated: true,
 	}
 
@@ -84,7 +83,6 @@ func TestUpdateItemByIdentifierCodeTx(t *testing.T) {
 	argCreateUser := CreateUserParams{
 		Username:  "testuserfortestupdateitem",
 		Password:  "testpassword",
-		Role:      "testrole",
 		Activated: true,
 	}
 

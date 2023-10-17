@@ -52,3 +52,10 @@ SET identifier_code   = $2,
     description       = $6
 WHERE item_id = $1
 RETURNING *;
+
+-- name: ListItem :many
+SELECT *
+FROM items
+WHERE deleted = FALSE
+ORDER BY item_id
+LIMIT $1 OFFSET $2;
