@@ -1,8 +1,8 @@
 PROJECTNAME=$(shell basename "$(PWD)")
 
-# if found secret.env file, include it.
-ifneq ("$(wildcard secret.env)","")
-	include secret.env
+# if found app.env file, include it.
+ifneq ("$(wildcard app.env)","")
+	include app.env
 endif
 
 DB_NAME=$(PROJECTNAME)_db

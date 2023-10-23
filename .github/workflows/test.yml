@@ -55,8 +55,8 @@ jobs:
     - name: Run migrations
       run: make migrateup
 
-    - name: Setup secret.env
-      run: echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD" >> secret.env
+    - name: Setup app.env
+      run: echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD" >> app.env
 
     - name: Test
       run: go test -coverprofile=coverage.txt -covermode=atomic ./...

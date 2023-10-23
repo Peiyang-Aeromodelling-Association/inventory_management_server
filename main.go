@@ -11,22 +11,19 @@ import (
 )
 
 // read secret from environment variables
-var dbSecret string
+var config util.Config
 
 func init() {
-	secretConfig := util.SecretConfig{}
-
-	err := util.LoadConfig(&secretConfig, "./")
+	var err error
+	config, err = util.LoadConfig("./")
 	if err != nil {
 		log.Fatal("cannot load secret config: ", err)
 	}
-
-	dbSecret = secretConfig.PostgresPassword
 }
 
 func main() {
 	var dbDriver = "postgres"
-	var dbSource = "postgresql://postgres:" + dbSecret + "@localhost:5432/inventory_management_server_db?sslmode=disable"
+	var dbSource = "postgresql://postgres:" + config.PostgresPassword + "@localhost:5432/inventory_management_server_db?sslmode=disable"
 
 	// connect to database
 	conn, err := sql.Open(dbDriver, dbSource)
@@ -35,7 +32,10 @@ func main() {
 	}
 
 	transaction := db.NewTransaction(conn)
-	server := api.NewServer(transaction)
+	server, err := api.NewServer(config, transaction)
+	if err != nil {
+		log.Fatal("cannot create server: ", err)
+	}
 
 	err = server.Start("0.0.0.0:8080")
 	if err != nil {

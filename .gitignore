@@ -6,7 +6,7 @@
 # Folders
 .idea
 
-secret.env
+app.env
 
 coverage.out
 coverage.txt
