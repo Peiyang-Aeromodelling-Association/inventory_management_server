@@ -208,3 +208,14 @@ func (transaction *Transaction) CreateUserTx(ctx context.Context, arg CreateUser
 
 	return result, execErr
 }
+
+func (transaction *Transaction) ListUsersTx(ctx context.Context, arg ListUsersParams) ([]User, error) {
+	var result []User
+	execErr := transaction.ExecTx(ctx, func(q *Queries) error {
+		var listErr error
+		result, listErr = q.ListUsers(ctx, arg)
+		return listErr
+	})
+
+	return result, execErr
+}

@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	db "github.com/Peiyang-Aeromodelling-Association/inventory_management_server/db/sqlc"
+	"github.com/Peiyang-Aeromodelling-Association/inventory_management_server/util"
 	"github.com/gin-gonic/gin"
 )
 
@@ -25,9 +26,14 @@ func (server *Server) createUser(ctx *gin.Context) {
 	}
 
 	// create a new user in the database via transaction
+	hashedPassword, err := util.HashPassword(req.Password)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
 	arg := db.CreateUserParams{
 		Username:    req.Username,
-		Password:    req.Password,
+		Password:    hashedPassword,
 		Description: sql.NullString{String: req.Description, Valid: true},
 		Activated:   true,
 	}
@@ -43,26 +49,25 @@ func (server *Server) createUser(ctx *gin.Context) {
 }
 
 type listUsersRequest struct {
-	Limit  int32 `form:"limit" binding:"omitempty,min=1,max=100"`
-	Offset int32 `form:"offset" binding:"omitempty,min=0"`
+	Limit  int32 `json:"limit" binding:"min=1,max=100"`
+	Offset int32 `json:"offset" binding:"min=0"`
 }
 
 func (server *Server) listUsers(ctx *gin.Context) {
 	var req listUsersRequest
 
 	// check if the request query is valid
-	if err := ctx.ShouldBindQuery(&req); err != nil {
+	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
-	// get the list of users from the database
 	arg := db.ListUsersParams{
 		Limit:  req.Limit,
 		Offset: req.Offset,
 	}
 
-	users, err := server.transaction.ListUsers(ctx, arg)
+	users, err := server.transaction.ListUsersTx(ctx, arg)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
@@ -70,4 +75,57 @@ func (server *Server) listUsers(ctx *gin.Context) {
 
 	// return OK
 	ctx.JSON(http.StatusOK, users)
+}
+
+type loginUserRequest struct {
+	Username string `json:"username" binding:"required,alphanum"`
+	Password string `json:"password" binding:"required,min=6"`
+}
+
+type loginUserResponse struct {
+	AccessToken string `json:"access_token"`
+	Username    string `json:"username"`
+}
+
+func (server *Server) loginUser(ctx *gin.Context) {
+	var req loginUserRequest
+
+	// check if the request body is valid
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	// get the user from the database
+	user, err := server.transaction.GetUserByUsername(ctx, req.Username)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, errorResponse(err)) // return 404 if user not found
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	// check if the password is correct
+	err = util.CheckPassword(req.Password, user.Password)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, errorResponse(err))
+		return
+	}
+
+	// generate access token
+	accessToken, _, err := server.tokenMaker.CreateToken(user.Username, server.config.AccessTokenDuration)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	// return OK
+	rsp := loginUserResponse{
+		AccessToken: accessToken,
+		Username:    user.Username,
+	}
+
+	ctx.JSON(http.StatusOK, rsp)
 }
