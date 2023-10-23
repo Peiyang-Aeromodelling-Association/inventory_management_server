@@ -197,3 +197,14 @@ func (transaction *Transaction) UpdateItemByIdentifierCodeTx(ctx context.Context
 
 	return result, execErr
 }
+
+func (transaction *Transaction) CreateUserTx(ctx context.Context, arg CreateUserParams) (User, error) {
+	var result User
+	execErr := transaction.ExecTx(ctx, func(q *Queries) error {
+		var createErr error
+		result, createErr = q.CreateUser(ctx, arg)
+		return createErr
+	})
+
+	return result, execErr
+}

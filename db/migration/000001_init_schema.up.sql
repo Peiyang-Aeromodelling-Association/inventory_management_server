@@ -1,6 +1,6 @@
 CREATE TABLE users
 (
-    uid       SERIAL PRIMARY KEY,
+    uid       INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     username  VARCHAR(255) NOT NULL UNIQUE,
     password  VARCHAR(255) NOT NULL,
     activated BOOLEAN      NOT NULL DEFAULT TRUE -- we don't delete users, we just deactivate them (history f key)
@@ -8,19 +8,19 @@ CREATE TABLE users
 
 CREATE TABLE items
 (
-    item_id           SERIAL PRIMARY KEY,                           -- item id for database
-    identifier_code   TEXT UNIQUE  NOT NULL,                        -- item id for barcode or qr code
-    name              VARCHAR(255) NOT NULL,                        -- name of the item
-    holder            INTEGER      NOT NULL REFERENCES users (uid), -- user id of the holder
-    modification_time TIMESTAMP    NOT NULL,                        -- time of last record change
-    modifier          INTEGER      NOT NULL REFERENCES users (uid), -- user id of the modifier
-    description       TEXT                  DEFAULT '',             -- description of the item
-    deleted           BOOLEAN      NOT NULL DEFAULT FALSE           -- valid flag
+    item_id           INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY, -- item id for database
+    identifier_code   TEXT UNIQUE  NOT NULL,                            -- item id for barcode or qr code
+    name              VARCHAR(255) NOT NULL,                            -- name of the item
+    holder            INTEGER      NOT NULL REFERENCES users (uid),     -- user id of the holder
+    modification_time TIMESTAMP    NOT NULL,                            -- time of last record change
+    modifier          INTEGER      NOT NULL REFERENCES users (uid),     -- user id of the modifier
+    description       TEXT                  DEFAULT '',                 -- description of the item
+    deleted           BOOLEAN      NOT NULL DEFAULT FALSE               -- valid flag
 );
 
 CREATE TABLE history
 (
-    history_id        SERIAL PRIMARY KEY, -- history id
+    history_id        INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY, -- history id
     item_id           INTEGER      NOT NULL REFERENCES items (item_id),
     identifier_code   TEXT         NOT NULL,
     name              VARCHAR(255) NOT NULL,

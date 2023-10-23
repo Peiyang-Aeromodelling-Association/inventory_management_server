@@ -22,14 +22,14 @@ func (server *Server) createUser(ctx *gin.Context) {
 		return
 	}
 
-	// create a new user in the database
+	// create a new user in the database via transaction
 	arg := db.CreateUserParams{
 		Username:  req.Username,
 		Password:  req.Password,
 		Activated: true,
 	}
 
-	user, err := server.transaction.CreateUser(ctx, arg)
+	user, err := server.transaction.CreateUserTx(ctx, arg)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return

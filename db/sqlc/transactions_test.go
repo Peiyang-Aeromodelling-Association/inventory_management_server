@@ -134,3 +134,27 @@ func TestUpdateItemByIdentifierCodeTx(t *testing.T) {
 	require.Equal(t, argsUpdateItem.Description, updateItem.Description)
 	require.Equal(t, false, updateItem.Deleted)
 }
+
+func TestCreateUserTx(t *testing.T) {
+	args := CreateUserParams{
+		Username:  "testcreateusertx1",
+		Password:  "testpassword",
+		Activated: true,
+	}
+
+	transaction := NewTransaction(testDB)
+	user, err := transaction.CreateUserTx(context.Background(), args)
+
+	require.NoError(t, err)
+	require.NotEmpty(t, user.Uid)
+	require.Equal(t, args.Username, user.Username)
+	require.Equal(t, args.Password, user.Password)
+	require.Equal(t, args.Activated, user.Activated)
+
+	// test duplicate username
+	_, err = transaction.CreateUserTx(context.Background(), args)
+	// require err doesn't contain 'rollback error' and contains 'duplicate key value'
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "duplicate key value")
+	require.NotContains(t, err.Error(), "rollback error")
+}

@@ -10,12 +10,16 @@ type Server struct {
 	router      *gin.Engine
 }
 
-func NewServer(transaction *db.Transaction) (*Server, error) {
+func NewServer(transaction *db.Transaction) *Server {
 	server := &Server{transaction: transaction}
 
 	server.setupRouter()
 
-	return server, nil
+	return server
+}
+
+func (server *Server) Start(address string) error {
+	return server.router.Run(address)
 }
 
 func (server *Server) setupRouter() {

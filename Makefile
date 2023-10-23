@@ -42,7 +42,11 @@ test:
 ## wipedb: Drop tables and create tables
 wipedb: migratedown migrateup
 
-.PHONY: help postgres createdb dropdb migrateup migratedown sqlc test dbclean
+## server: Run server
+server:
+	go run main.go
+
+.PHONY: help postgres createdb dropdb migrateup migratedown sqlc test wipedb server
 
 .DEFAULT_GOAL := help
 all: help
