@@ -7,6 +7,11 @@ import (
 	"github.com/Peiyang-Aeromodelling-Association/inventory_management_server/token"
 	"github.com/Peiyang-Aeromodelling-Association/inventory_management_server/util"
 	"github.com/gin-gonic/gin"
+
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+
+	_ "github.com/Peiyang-Aeromodelling-Association/inventory_management_server/docs"
 )
 
 type Server struct {
@@ -38,7 +43,12 @@ func (server *Server) Start(address string) error {
 }
 
 func (server *Server) setupRouter() {
+	// gin.SetMode(gin.ReleaseMode)
+
 	router := gin.Default()
+
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	router.POST("/login", server.loginUser)
 	router.POST("/create-user", server.createUser)
 

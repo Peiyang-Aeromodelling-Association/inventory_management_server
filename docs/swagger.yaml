@@ -1,0 +1,218 @@
+definitions:
+  api.createUserRequest:
+    properties:
+      description:
+        type: string
+      password:
+        minLength: 6
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  api.listItemRequest:
+    properties:
+      limit:
+        maximum: 100
+        minimum: 1
+        type: integer
+      offset:
+        minimum: 0
+        type: integer
+    type: object
+  api.listUsersRequest:
+    properties:
+      limit:
+        maximum: 100
+        minimum: 1
+        type: integer
+      offset:
+        minimum: 0
+        type: integer
+    type: object
+  api.loginUserRequest:
+    properties:
+      password:
+        minLength: 6
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  api.loginUserResponse:
+    properties:
+      access_token:
+        type: string
+      username:
+        type: string
+    type: object
+  db.Item:
+    properties:
+      deleted:
+        type: boolean
+      description:
+        $ref: '#/definitions/sql.NullString'
+      holder:
+        type: integer
+      identifier_code:
+        type: string
+      item_id:
+        type: integer
+      modification_time:
+        type: string
+      modifier:
+        type: integer
+      name:
+        type: string
+    type: object
+  db.User:
+    properties:
+      activated:
+        type: boolean
+      description:
+        $ref: '#/definitions/sql.NullString'
+      password:
+        type: string
+      uid:
+        type: integer
+      username:
+        type: string
+    type: object
+  sql.NullString:
+    properties:
+      string:
+        type: string
+      valid:
+        description: Valid is true if String is not NULL
+        type: boolean
+    type: object
+info:
+  contact: {}
+paths:
+  /create-user:
+    post:
+      consumes:
+      - application/json
+      description: Create a user
+      parameters:
+      - description: create user request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/api.createUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/db.User'
+        "400":
+          description: Bad Request
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Create a user
+      tags:
+      - users
+  /list-item:
+    post:
+      consumes:
+      - application/json
+      description: List items
+      parameters:
+      - description: list item request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/api.listItemRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/db.Item'
+            type: array
+        "400":
+          description: Bad Request
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: List items
+      tags:
+      - items
+  /list-users:
+    get:
+      consumes:
+      - application/json
+      description: List users
+      parameters:
+      - description: list users request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/api.listUsersRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/db.User'
+            type: array
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: List users
+      tags:
+      - users
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Login a user
+      parameters:
+      - description: login user request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/api.loginUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.loginUserResponse'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Login a user
+      tags:
+      - users
+swagger: "2.0"

@@ -13,6 +13,17 @@ type listItemRequest struct {
 	Offset int32 `json:"offset" binding:"min=0"`
 }
 
+// listItem
+// @Summary List items
+// @Description List items
+// @Tags items
+// @Accept json
+// @Produce json
+// @Param request body listItemRequest true "list item request"
+// @Success 200 {array} db.Item "OK"
+// @Failure 400 {object} error "Bad Request"
+// @Failure 500 {object} error "Internal Server Error"
+// @Router /list-item [post]
 func (server *Server) listItems(ctx *gin.Context) {
 	var req listItemRequest
 

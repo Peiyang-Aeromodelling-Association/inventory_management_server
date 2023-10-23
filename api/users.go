@@ -16,6 +16,17 @@ type createUserRequest struct {
 	Description string `json:"description" binding:"omitempty"`
 }
 
+// createUser
+// @Summary Create a user
+// @Description Create a user
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param request body createUserRequest true "create user request"
+// @Success 200 {object} db.User "OK"
+// @Failure 400 {object} error "Bad Request"
+// @Failure 500 {object} error "Internal Server Error"
+// @Router /create-user [post]
 func (server *Server) createUser(ctx *gin.Context) {
 	var req createUserRequest
 
@@ -53,6 +64,18 @@ type listUsersRequest struct {
 	Offset int32 `json:"offset" binding:"min=0"`
 }
 
+// listUsers
+// @Summary List users
+// @Description List users
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param request body listUsersRequest true "list users request"
+// @Success 200 {array} db.User "OK"
+// @Failure 400 {object} error "Bad Request"
+// @Failure 404 {object} error "Not Found"
+// @Failure 500 {object} error "Internal Server Error"
+// @Router /list-users [get]
 func (server *Server) listUsers(ctx *gin.Context) {
 	var req listUsersRequest
 
@@ -69,6 +92,10 @@ func (server *Server) listUsers(ctx *gin.Context) {
 
 	users, err := server.transaction.ListUsersTx(ctx, arg)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, errorResponse(err)) // return 404 if user not found
+			return
+		}
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
@@ -87,6 +114,18 @@ type loginUserResponse struct {
 	Username    string `json:"username"`
 }
 
+// loginUser
+// @Summary Login a user
+// @Description Login a user
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param request body loginUserRequest true "login user request"
+// @Success 200 {object} loginUserResponse "OK"
+// @Failure 400 {object} error "Bad Request"
+// @Failure 404 {object} error "Not Found"
+// @Failure 500 {object} error "Internal Server Error"
+// @Router /login [post]
 func (server *Server) loginUser(ctx *gin.Context) {
 	var req loginUserRequest
 

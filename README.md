@@ -6,3 +6,11 @@
 ## 项目简介
 
 TODO
+
+## 开发
+
+重新生成swagger文档
+
+```bash
+swag init --parseDependency --parseInternal --parseDepth 1
+```
