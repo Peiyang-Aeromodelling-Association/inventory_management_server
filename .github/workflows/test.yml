@@ -56,7 +56,10 @@ jobs:
       run: make migrateup
 
     - name: Setup app.env
-      run: echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD" >> app.env
+      run: |
+        echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD" >> app.env
+        echo "TOKEN_SYMMETRIC_KEY=testkeygdwd2ggwyt8193234ase8dese" >> app.env
+        echo "ACCESS_TOKEN_DURATION=15m" >> app.env
 
     - name: Test
       run: go test -coverprofile=coverage.txt -covermode=atomic ./...
