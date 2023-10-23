@@ -11,9 +11,10 @@ import (
 func TestCreateHistory(t *testing.T) {
 	// create a user to prevent foreign key constraint error
 	argUser := CreateUserParams{
-		Username:  "testuserwithusernameforhistory",
-		Password:  "testpassword",
-		Activated: true,
+		Username:    "testuserwithusernameforhistory",
+		Password:    "testpassword",
+		Description: sql.NullString{String: "test description", Valid: true},
+		Activated:   true,
 	}
 
 	user, err := testQueries.CreateUser(context.Background(), argUser)

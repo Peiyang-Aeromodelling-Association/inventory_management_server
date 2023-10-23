@@ -32,15 +32,10 @@ type Item struct {
 	Deleted          bool           `json:"deleted"`
 }
 
-type Token struct {
-	Token      string    `json:"token"`
-	Uid        int32     `json:"uid"`
-	ValidUntil time.Time `json:"valid_until"`
-}
-
 type User struct {
-	Uid       int32  `json:"uid"`
-	Username  string `json:"username"`
-	Password  string `json:"password"`
-	Activated bool   `json:"activated"`
+	Uid         int32          `json:"uid"`
+	Username    string         `json:"username"`
+	Password    string         `json:"password"`
+	Description sql.NullString `json:"description"`
+	Activated   bool           `json:"activated"`
 }

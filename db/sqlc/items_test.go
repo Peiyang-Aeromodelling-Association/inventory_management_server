@@ -13,9 +13,10 @@ import (
 func TestGetItemsByHolder(t *testing.T) {
 	// create a user to prevent foreign key constraint error
 	argUser := CreateUserParams{
-		Username:  "testuserwithusernameforgetitembyholder",
-		Password:  "testpassword",
-		Activated: true,
+		Username:    "testuserwithusernameforgetitembyholder",
+		Password:    "testpassword",
+		Description: sql.NullString{String: "test description", Valid: true},
+		Activated:   true,
 	}
 
 	user, err := testQueries.CreateUser(context.Background(), argUser)

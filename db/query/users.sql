@@ -1,13 +1,14 @@
 -- name: CreateUser :one
-INSERT INTO users (username, password, activated)
-VALUES ($1, $2, $3)
+INSERT INTO users (username, password, description, activated)
+VALUES ($1, $2, $3, $4)
 RETURNING *;
 
 -- name: UpdateUser :one
 UPDATE users
 SET username  = $2,
     password  = $3,
-    activated = $4
+    description = $4,
+    activated = $5
 WHERE uid = $1
 RETURNING *;
 

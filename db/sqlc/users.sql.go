@@ -7,34 +7,42 @@ package db
 
 import (
 	"context"
+	"database/sql"
 )
 
 const createUser = `-- name: CreateUser :one
-INSERT INTO users (username, password, activated)
-VALUES ($1, $2, $3)
-RETURNING uid, username, password, activated
+INSERT INTO users (username, password, description, activated)
+VALUES ($1, $2, $3, $4)
+RETURNING uid, username, password, description, activated
 `
 
 type CreateUserParams struct {
-	Username  string `json:"username"`
-	Password  string `json:"password"`
-	Activated bool   `json:"activated"`
+	Username    string         `json:"username"`
+	Password    string         `json:"password"`
+	Description sql.NullString `json:"description"`
+	Activated   bool           `json:"activated"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, createUser, arg.Username, arg.Password, arg.Activated)
+	row := q.db.QueryRowContext(ctx, createUser,
+		arg.Username,
+		arg.Password,
+		arg.Description,
+		arg.Activated,
+	)
 	var i User
 	err := row.Scan(
 		&i.Uid,
 		&i.Username,
 		&i.Password,
+		&i.Description,
 		&i.Activated,
 	)
 	return i, err
 }
 
 const getUserByUsername = `-- name: GetUserByUsername :one
-SELECT uid, username, password, activated
+SELECT uid, username, password, description, activated
 FROM users
 WHERE username = $1
 `
@@ -46,13 +54,14 @@ func (q *Queries) GetUserByUsername(ctx context.Context, username string) (User,
 		&i.Uid,
 		&i.Username,
 		&i.Password,
+		&i.Description,
 		&i.Activated,
 	)
 	return i, err
 }
 
 const getUserByUsernameForUpdate = `-- name: GetUserByUsernameForUpdate :one
-SELECT uid, username, password, activated
+SELECT uid, username, password, description, activated
 FROM users
 WHERE username = $1
     FOR NO KEY UPDATE
@@ -65,13 +74,14 @@ func (q *Queries) GetUserByUsernameForUpdate(ctx context.Context, username strin
 		&i.Uid,
 		&i.Username,
 		&i.Password,
+		&i.Description,
 		&i.Activated,
 	)
 	return i, err
 }
 
 const listUsers = `-- name: ListUsers :many
-SELECT uid, username, password, activated
+SELECT uid, username, password, description, activated
 FROM users
 WHERE activated = TRUE
 ORDER BY uid
@@ -96,6 +106,7 @@ func (q *Queries) ListUsers(ctx context.Context, arg ListUsersParams) ([]User, e
 			&i.Uid,
 			&i.Username,
 			&i.Password,
+			&i.Description,
 			&i.Activated,
 		); err != nil {
 			return nil, err
@@ -115,16 +126,18 @@ const updateUser = `-- name: UpdateUser :one
 UPDATE users
 SET username  = $2,
     password  = $3,
-    activated = $4
+    description = $4,
+    activated = $5
 WHERE uid = $1
-RETURNING uid, username, password, activated
+RETURNING uid, username, password, description, activated
 `
 
 type UpdateUserParams struct {
-	Uid       int32  `json:"uid"`
-	Username  string `json:"username"`
-	Password  string `json:"password"`
-	Activated bool   `json:"activated"`
+	Uid         int32          `json:"uid"`
+	Username    string         `json:"username"`
+	Password    string         `json:"password"`
+	Description sql.NullString `json:"description"`
+	Activated   bool           `json:"activated"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
@@ -132,6 +145,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		arg.Uid,
 		arg.Username,
 		arg.Password,
+		arg.Description,
 		arg.Activated,
 	)
 	var i User
@@ -139,6 +153,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		&i.Uid,
 		&i.Username,
 		&i.Password,
+		&i.Description,
 		&i.Activated,
 	)
 	return i, err

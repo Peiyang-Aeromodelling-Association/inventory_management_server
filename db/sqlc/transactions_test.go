@@ -33,9 +33,10 @@ func TestCreateItemTx(t *testing.T) {
 func TestDeleteItemByIdentifierCodeTx(t *testing.T) {
 	// 1. Create a user first
 	argCreateUser := CreateUserParams{
-		Username:  "testuserfortestdeleteitem",
-		Password:  "testpassword",
-		Activated: true,
+		Username:    "testuserfortestdeleteitem",
+		Password:    "testpassword",
+		Description: sql.NullString{String: "test description", Valid: true},
+		Activated:   true,
 	}
 
 	user, err := testQueries.CreateUser(context.Background(), argCreateUser)
@@ -81,9 +82,10 @@ func TestDeleteItemByIdentifierCodeTx(t *testing.T) {
 func TestUpdateItemByIdentifierCodeTx(t *testing.T) {
 	// 1. Create a user first
 	argCreateUser := CreateUserParams{
-		Username:  "testuserfortestupdateitem",
-		Password:  "testpassword",
-		Activated: true,
+		Username:    "testuserfortestupdateitem",
+		Password:    "testpassword",
+		Description: sql.NullString{String: "test description", Valid: true},
+		Activated:   true,
 	}
 
 	user, err := testQueries.CreateUser(context.Background(), argCreateUser)
@@ -137,9 +139,10 @@ func TestUpdateItemByIdentifierCodeTx(t *testing.T) {
 
 func TestCreateUserTx(t *testing.T) {
 	args := CreateUserParams{
-		Username:  "testcreateusertx1",
-		Password:  "testpassword",
-		Activated: true,
+		Username:    "testcreateusertx1",
+		Password:    "testpassword",
+		Description: sql.NullString{String: "test description", Valid: true},
+		Activated:   true,
 	}
 
 	transaction := NewTransaction(testDB)

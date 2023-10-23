@@ -1,6 +1,7 @@
 package api
 
 import (
+	"database/sql"
 	"net/http"
 
 	db "github.com/Peiyang-Aeromodelling-Association/inventory_management_server/db/sqlc"
@@ -9,8 +10,9 @@ import (
 
 // Struct to handle create user request. Activated field will be defaulted to true.
 type createUserRequest struct {
-	Username string `json:"username" binding:"required,alphanum"`
-	Password string `json:"password" binding:"required,min=6"`
+	Username    string `json:"username" binding:"required,alphanum"`
+	Password    string `json:"password" binding:"required,min=6"`
+	Description string `json:"description" binding:"omitempty"`
 }
 
 func (server *Server) createUser(ctx *gin.Context) {
@@ -24,9 +26,10 @@ func (server *Server) createUser(ctx *gin.Context) {
 
 	// create a new user in the database via transaction
 	arg := db.CreateUserParams{
-		Username:  req.Username,
-		Password:  req.Password,
-		Activated: true,
+		Username:    req.Username,
+		Password:    req.Password,
+		Description: sql.NullString{String: req.Description, Valid: true},
+		Activated:   true,
 	}
 
 	user, err := server.transaction.CreateUserTx(ctx, arg)

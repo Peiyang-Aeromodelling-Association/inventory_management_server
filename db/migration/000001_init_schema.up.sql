@@ -3,6 +3,7 @@ CREATE TABLE users
     uid       INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     username  VARCHAR(255) NOT NULL UNIQUE,
     password  VARCHAR(255) NOT NULL,
+    description TEXT DEFAULT '',
     activated BOOLEAN      NOT NULL DEFAULT TRUE -- we don't delete users, we just deactivate them (history f key)
 );
 

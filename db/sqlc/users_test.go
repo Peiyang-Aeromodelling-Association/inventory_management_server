@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"testing"
 
@@ -11,9 +12,10 @@ import (
 func TestCreateUser(t *testing.T) {
 	// create a new user
 	arg := CreateUserParams{
-		Username:  "testcreateuser",
-		Password:  "testpassword",
-		Activated: true,
+		Username:    "testcreateuser",
+		Password:    "testpassword",
+		Description: sql.NullString{String: "test description", Valid: true},
+		Activated:   true,
 	}
 
 	user, err := testQueries.CreateUser(context.Background(), arg)
@@ -31,9 +33,10 @@ func TestCreateUser(t *testing.T) {
 func TestGetUserByUsername(t *testing.T) {
 	// create a new user
 	arg := CreateUserParams{
-		Username:  "testgetuserwithusername",
-		Password:  "testpassword",
-		Activated: true,
+		Username:    "testgetuserwithusername",
+		Password:    "testpassword",
+		Description: sql.NullString{String: "test description", Valid: true},
+		Activated:   true,
 	}
 
 	user, err := testQueries.CreateUser(context.Background(), arg)
@@ -56,9 +59,10 @@ func TestGetUserByUsername(t *testing.T) {
 func TestGetUserByUsernameForUpdate(t *testing.T) {
 	// create a new user
 	arg := CreateUserParams{
-		Username:  "testuserwithusernameforupdate",
-		Password:  "testpassword",
-		Activated: true,
+		Username:    "testuserwithusernameforupdate",
+		Password:    "testpassword",
+		Description: sql.NullString{String: "test description", Valid: true},
+		Activated:   true,
 	}
 
 	user, err := testQueries.CreateUser(context.Background(), arg)
@@ -82,9 +86,10 @@ func TestListUsers(t *testing.T) {
 	users := make([]CreateUserParams, 10)
 	for i := 0; i < 10; i++ {
 		users[i] = CreateUserParams{
-			Username:  "testlistuser" + fmt.Sprintf("%d", i),
-			Password:  "testpassword",
-			Activated: true,
+			Username:    "testlistuser" + fmt.Sprintf("%d", i),
+			Password:    "testpassword",
+			Description: sql.NullString{String: "test description", Valid: true},
+			Activated:   true,
 		}
 
 		_, err := testQueries.CreateUser(context.Background(), users[i])
@@ -116,9 +121,10 @@ func TestListUsers(t *testing.T) {
 func TestUpdateUser(t *testing.T) {
 	// create a new user
 	arg := CreateUserParams{
-		Username:  "test update user username",
-		Password:  "testpassword",
-		Activated: true,
+		Username:    "test update user username",
+		Password:    "testpassword",
+		Description: sql.NullString{String: "test description", Valid: true},
+		Activated:   true,
 	}
 
 	user, err := testQueries.CreateUser(context.Background(), arg)
