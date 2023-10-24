@@ -12,6 +12,8 @@ type Config struct {
 	AccessTokenDuration time.Duration `mapstructure:"ACCESS_TOKEN_DURATION"`
 	PostgresPassword    string        `mapstructure:"POSTGRES_PASSWORD"`
 	TokenSymmetricKey   string        `mapstructure:"TOKEN_SYMMETRIC_KEY"`
+	AdminUsername       string        `mapstructure:"ADMIN_USERNAME"`
+	AdminPassword       string        `mapstructure:"ADMIN_PASSWORD"`
 }
 
 // methods for loading config
