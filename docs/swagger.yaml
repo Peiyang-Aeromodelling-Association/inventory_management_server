@@ -27,6 +27,13 @@ definitions:
     - password
     - username
     type: object
+  api.deleteItemRequest:
+    properties:
+      identifier_code:
+        type: string
+    required:
+    - identifier_code
+    type: object
   api.listItemRequest:
     properties:
       limit:
@@ -64,6 +71,24 @@ definitions:
         type: string
       username:
         type: string
+    type: object
+  api.updateItemRequest:
+    properties:
+      description:
+        type: string
+      holder:
+        type: integer
+      identifier_code:
+        type: string
+      name:
+        type: string
+      query_identifier_code:
+        type: string
+    required:
+    - holder
+    - identifier_code
+    - name
+    - query_identifier_code
     type: object
   api.updateUserRequest:
     properties:
@@ -163,6 +188,37 @@ paths:
       summary: Create item
       tags:
       - items
+  /items/delete:
+    post:
+      consumes:
+      - application/json
+      description: Delete item
+      parameters:
+      - description: delete item request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/api.deleteItemRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/db.Item'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Delete item
+      tags:
+      - items
   /items/list:
     post:
       consumes:
@@ -191,6 +247,37 @@ paths:
           description: Internal Server Error
           schema: {}
       summary: List items
+      tags:
+      - items
+  /items/update:
+    post:
+      consumes:
+      - application/json
+      description: Update item
+      parameters:
+      - description: update item request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/api.updateItemRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/db.Item'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Update item
       tags:
       - items
   /login:

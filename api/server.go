@@ -58,6 +58,8 @@ func (server *Server) setupRouter() {
 	authRoutes.GET("/users/list", server.listUsers)
 
 	authRoutes.POST("/items/create", server.createItem)
+	authRoutes.POST("/items/update", server.updateItem)
+	authRoutes.POST("/items/delete", server.deleteItem)
 	authRoutes.GET("/items/count", server.itemsCount)
 	authRoutes.GET("/items/list", server.listItems)
 

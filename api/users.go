@@ -214,6 +214,10 @@ func (server *Server) updateUser(ctx *gin.Context) {
 
 	user, err := server.transaction.UpdateUserByUsernameTx(ctx, arg)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, errorResponse(err)) // return 404 if user not found
+			return
+		}
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}

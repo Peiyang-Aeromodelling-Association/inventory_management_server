@@ -78,6 +78,52 @@ const docTemplate = `{
                 }
             }
         },
+        "/items/delete": {
+            "post": {
+                "description": "Delete item",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "items"
+                ],
+                "summary": "Delete item",
+                "parameters": [
+                    {
+                        "description": "delete item request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.deleteItemRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/db.Item"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
         "/items/list": {
             "post": {
                 "description": "List items",
@@ -114,6 +160,52 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/items/update": {
+            "post": {
+                "description": "Update item",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "items"
+                ],
+                "summary": "Update item",
+                "parameters": [
+                    {
+                        "description": "update item request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.updateItemRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/db.Item"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {}
                     },
                     "500": {
@@ -349,6 +441,17 @@ const docTemplate = `{
                 }
             }
         },
+        "api.deleteItemRequest": {
+            "type": "object",
+            "required": [
+                "identifier_code"
+            ],
+            "properties": {
+                "identifier_code": {
+                    "type": "string"
+                }
+            }
+        },
         "api.listItemRequest": {
             "type": "object",
             "properties": {
@@ -400,6 +503,32 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "api.updateItemRequest": {
+            "type": "object",
+            "required": [
+                "holder",
+                "identifier_code",
+                "name",
+                "query_identifier_code"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "holder": {
+                    "type": "integer"
+                },
+                "identifier_code": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "query_identifier_code": {
                     "type": "string"
                 }
             }
