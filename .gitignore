@@ -10,3 +10,5 @@ app.env
 
 coverage.out
 coverage.txt
+
+db_data_volume

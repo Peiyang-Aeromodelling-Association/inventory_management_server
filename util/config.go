@@ -9,11 +9,14 @@ import (
 
 type Config struct {
 	DBDriver            string        `mapstructure:"DB_DRIVER"`
+	DBHost              string        `mapstructure:"DB_HOST"`
+	MigrationURL        string        `mapstructure:"MIGRATION_URL"`
 	AccessTokenDuration time.Duration `mapstructure:"ACCESS_TOKEN_DURATION"`
 	PostgresPassword    string        `mapstructure:"POSTGRES_PASSWORD"`
 	TokenSymmetricKey   string        `mapstructure:"TOKEN_SYMMETRIC_KEY"`
 	AdminUsername       string        `mapstructure:"ADMIN_USERNAME"`
 	AdminPassword       string        `mapstructure:"ADMIN_PASSWORD"`
+	HTTPServerAddress   string        `mapstructure:"HTTP_SERVER_ADDRESS"`
 }
 
 // methods for loading config

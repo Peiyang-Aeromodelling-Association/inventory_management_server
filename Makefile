@@ -6,7 +6,7 @@ ifneq ("$(wildcard app.env)","")
 endif
 
 DB_NAME=$(PROJECTNAME)_db
-DB_URL=postgresql://postgres:$(POSTGRES_PASSWORD)@localhost:5432/$(DB_NAME)?sslmode=disable
+DB_URL=postgresql://postgres:$(POSTGRES_PASSWORD)@$(DB_HOST):5432/$(DB_NAME)?sslmode=disable
 
 ## postgres: Run postgres container
 postgres:
@@ -17,6 +17,16 @@ postgres:
 createdb:
 	@echo "Creating database with user postgres"
 	docker exec -it postgres createdb --username=postgres --owner=postgres $(DB_NAME)
+
+## dockercompose: Run docker-compose
+dockercompose:
+	@echo "Running docker-compose"
+	docker-compose up -d
+
+## rmdockercompose: Remove docker-compose
+rmdockercompose:
+	@echo "Removing docker-compose"
+	docker-compose down && docker rmi $(PROJECTNAME)-api
 
 ## dropdb: Drop database
 dropdb:
@@ -50,7 +60,7 @@ server:
 swagger:
 	swag init --parseDependency --parseInternal --parseDepth 1
 
-.PHONY: help postgres createdb dropdb migrateup migratedown sqlc test wipedb server swagger
+.PHONY: help postgres createdb dropdb migrateup migratedown sqlc test wipedb server swagger dockercompose rmdockercompose
 
 .DEFAULT_GOAL := help
 all: help

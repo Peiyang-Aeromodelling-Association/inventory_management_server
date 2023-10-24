@@ -29,7 +29,7 @@ func TestMain(m *testing.M) {
 	var err error
 
 	var dbDriver = "postgres"
-	var dbSource = "postgresql://postgres:" + config.PostgresPassword + "@localhost:5432/inventory_management_server_db?sslmode=disable"
+	var dbSource = "postgresql://postgres:" + config.PostgresPassword + "@" + config.DBHost + ":5432/inventory_management_server_db?sslmode=disable"
 
 	// connect to database
 	testDB, err = sql.Open(dbDriver, dbSource)
