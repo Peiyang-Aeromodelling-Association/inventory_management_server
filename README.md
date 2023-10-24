@@ -26,3 +26,13 @@ make test
 ```bash
 make swagger
 ```
+
+## 部署
+
+通过docker-compose部署：
+
+```bash
+make dockercompose
+```
+
+如果出现意外，重启docker-compose也是相同的命令。一般来说，postgresql会自动重启。
