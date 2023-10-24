@@ -62,6 +62,9 @@ func (server *Server) setupRouter() {
 	authRoutes.POST("/items/delete", server.deleteItem)
 	authRoutes.GET("/items/count", server.itemsCount)
 	authRoutes.GET("/items/list", server.listItems)
+	authRoutes.GET("/items/identifier/:identifier", server.getItemByIdentifier)
+	authRoutes.GET("/items/checkin/:identifier", server.checkInItem)
+	authRoutes.GET("/items/checkout/:identifier", server.checkOutItem)
 
 	server.router = router
 }

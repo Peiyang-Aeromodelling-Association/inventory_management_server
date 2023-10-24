@@ -64,3 +64,11 @@ LIMIT $1 OFFSET $2;
 SELECT COUNT(*)
 FROM items
 WHERE deleted = FALSE;
+
+-- name: AlterHolderByIdentifierCode :one
+UPDATE items
+SET holder            = $2,
+    modification_time = CURRENT_TIMESTAMP,
+    modifier          = $3
+WHERE identifier_code = $1
+RETURNING *;

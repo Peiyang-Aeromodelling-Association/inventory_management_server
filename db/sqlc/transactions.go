@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"database/sql"
@@ -258,6 +259,69 @@ func (transaction *Transaction) UpdateUserByUsernameTx(ctx context.Context, arg 
 			return updateErr
 		}
 		return nil
+	})
+
+	return result, execErr
+}
+
+var ErrItemDeleted = errors.New("item is deleted")
+
+func (transaction *Transaction) AlterHolderByIdentifierCodeTx(ctx context.Context, arg AlterHolderByIdentifierCodeParams) (Item, error) {
+	var result Item
+	execErr := transaction.ExecTx(ctx, func(q *Queries) error {
+		// 1. get item id by identifier code
+		var getItemErr error
+
+		// make sure Deleted is false
+		argGetItem := GetItemsByIdentifierCodeForUpdateParams{
+			IdentifierCode: arg.IdentifierCode,
+			Deleted:        false,
+		}
+
+		result, getItemErr = q.GetItemsByIdentifierCodeForUpdate(ctx, argGetItem)
+
+		if getItemErr != nil {
+			return getItemErr
+		}
+
+		// 1.2 if Deleted is true, raise error
+		if result.Deleted {
+			return ErrItemDeleted
+		}
+
+		// 2. update item
+		var updateErr error
+
+		updateArgs := UpdateItemParams{
+			ItemID:         result.ItemID, // ItemID used for querying should be results from previous query step
+			IdentifierCode: result.IdentifierCode,
+			Name:           result.Name,
+			Holder:         arg.Holder,
+			Modifier:       arg.Modifier,
+			Description:    result.Description,
+		}
+
+		result, updateErr = q.UpdateItem(ctx, updateArgs)
+
+		if updateErr != nil {
+			return updateErr
+		}
+
+		// 3. create history
+		var historyArg CreateHistoryParams
+
+		historyArg.ItemID = result.ItemID
+		historyArg.IdentifierCode = result.IdentifierCode
+		historyArg.Name = result.Name
+		historyArg.Holder = result.Holder
+		historyArg.ModificationTime = result.ModificationTime
+		historyArg.Modifier = result.Modifier
+		historyArg.Description = result.Description
+		historyArg.Deleted = result.Deleted
+
+		_, historyErr := q.CreateHistory(ctx, historyArg)
+
+		return historyErr
 	})
 
 	return result, execErr

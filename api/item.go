@@ -257,3 +257,168 @@ func (server *Server) deleteItem(ctx *gin.Context) {
 	// return OK
 	ctx.JSON(http.StatusOK, result)
 }
+
+type getItemByIdentifierRequest struct {
+	IdentifierCode string `uri:"identifier" binding:"required"`
+}
+
+// getItemByIdentifier
+// @Summary Get item by identifier
+// @Description Get item by identifier
+// @Tags items
+// @Produce json
+// @Param identifier path string true "identifier code"
+// @Success 200 {object} db.Item
+// @Failure 404 {object} error "Not Found"
+// @Failure 400 {object} error "Bad Request"
+// @Failure 500 {object} error "Internal Server Error"
+// @Router /items/identifier/{identifier} [get]
+func (server *Server) getItemByIdentifier(ctx *gin.Context) {
+	var req getItemByIdentifierRequest
+
+	// check if the request body is valid
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	item, err := server.transaction.GetItemsByIdentifierCode(ctx, db.GetItemsByIdentifierCodeParams{
+		IdentifierCode: req.IdentifierCode,
+		Deleted:        false,
+	})
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, errorResponse(err)) // return 404 if item not found
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	// return OK
+	ctx.JSON(http.StatusOK, item)
+}
+
+type checkInItemRequest struct {
+	IdentifierCode string `uri:"identifier" binding:"required"`
+}
+
+// checkInItem
+// @Summary Check in item
+// @Description Check in item
+// @Tags items
+// @Produce json
+// @Param identifier path string true "identifier code"
+// @Success 200 {object} db.Item
+// @Failure 404 {object} error "Not Found"
+// @Failure 400 {object} error "Bad Request"
+// @Failure 500 {object} error "Internal Server Error"
+// @Router /items/checkin/{identifier} [get]
+func (server *Server) checkInItem(ctx *gin.Context) {
+	var req checkInItemRequest
+
+	// check if the request body is valid
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+
+	// transaction
+	var result db.Item
+	err := server.transaction.ExecTx(ctx, func(q *db.Queries) error {
+		// 1. get the user from the database
+		user, err := q.GetUserByUsername(ctx, authPayload.Username)
+		if err != nil {
+			return err
+		}
+
+		// 2. get admin user id from database
+		adminUser, err := q.GetUserByUsername(ctx, server.config.AdminUsername)
+		if err != nil {
+			return err
+		}
+
+		// 2. check in the item with modifier uid
+		arg := db.AlterHolderByIdentifierCodeParams{
+			IdentifierCode: req.IdentifierCode,
+			Holder:         adminUser.Uid,
+			Modifier:       user.Uid,
+		}
+
+		result, err = server.transaction.AlterHolderByIdentifierCodeTx(ctx, arg)
+
+		return err
+	})
+
+	if err != nil {
+		if err == sql.ErrNoRows || err == db.ErrItemDeleted {
+			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	// return OK
+	ctx.JSON(http.StatusOK, result)
+}
+
+type checkOutItemRequest struct {
+	IdentifierCode string `uri:"identifier" binding:"required"`
+}
+
+// checkOutItem
+// @Summary Check out item
+// @Description Check out item
+// @Tags items
+// @Produce json
+// @Param identifier path string true "identifier code"
+// @Success 200 {object} db.Item
+// @Failure 404 {object} error "Not Found"
+// @Failure 400 {object} error "Bad Request"
+// @Failure 500 {object} error "Internal Server Error"
+// @Router /items/checkout/{identifier} [get]
+func (server *Server) checkOutItem(ctx *gin.Context) {
+	var req checkOutItemRequest
+
+	// check if the request body is valid
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+
+	// transaction
+	var result db.Item
+	err := server.transaction.ExecTx(ctx, func(q *db.Queries) error {
+		// 1. get the user from the database
+		user, err := q.GetUserByUsername(ctx, authPayload.Username)
+		if err != nil {
+			return err
+		}
+
+		// 2. check out the item with modifier uid
+		arg := db.AlterHolderByIdentifierCodeParams{
+			IdentifierCode: req.IdentifierCode,
+			Holder:         user.Uid,
+			Modifier:       user.Uid,
+		}
+
+		result, err = server.transaction.AlterHolderByIdentifierCodeTx(ctx, arg)
+
+		return err
+	})
+
+	if err != nil {
+		if err == sql.ErrNoRows || err == db.ErrItemDeleted {
+			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	// return OK
+	ctx.JSON(http.StatusOK, result)
+}

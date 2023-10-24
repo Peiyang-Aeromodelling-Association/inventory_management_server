@@ -10,6 +10,37 @@ import (
 	"database/sql"
 )
 
+const alterHolderByIdentifierCode = `-- name: AlterHolderByIdentifierCode :one
+UPDATE items
+SET holder            = $2,
+    modification_time = CURRENT_TIMESTAMP,
+    modifier          = $3
+WHERE identifier_code = $1
+RETURNING item_id, identifier_code, name, holder, modification_time, modifier, description, deleted
+`
+
+type AlterHolderByIdentifierCodeParams struct {
+	IdentifierCode string `json:"identifier_code"`
+	Holder         int32  `json:"holder"`
+	Modifier       int32  `json:"modifier"`
+}
+
+func (q *Queries) AlterHolderByIdentifierCode(ctx context.Context, arg AlterHolderByIdentifierCodeParams) (Item, error) {
+	row := q.db.QueryRowContext(ctx, alterHolderByIdentifierCode, arg.IdentifierCode, arg.Holder, arg.Modifier)
+	var i Item
+	err := row.Scan(
+		&i.ItemID,
+		&i.IdentifierCode,
+		&i.Name,
+		&i.Holder,
+		&i.ModificationTime,
+		&i.Modifier,
+		&i.Description,
+		&i.Deleted,
+	)
+	return i, err
+}
+
 const countItems = `-- name: CountItems :one
 SELECT COUNT(*)
 FROM items

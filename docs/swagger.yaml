@@ -146,6 +146,62 @@ definitions:
 info:
   contact: {}
 paths:
+  /items/checkin/{identifier}:
+    get:
+      description: Check in item
+      parameters:
+      - description: identifier code
+        in: path
+        name: identifier
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/db.Item'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Check in item
+      tags:
+      - items
+  /items/checkout/{identifier}:
+    get:
+      description: Check out item
+      parameters:
+      - description: identifier code
+        in: path
+        name: identifier
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/db.Item'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Check out item
+      tags:
+      - items
   /items/count:
     get:
       description: Count items
@@ -217,6 +273,34 @@ paths:
           description: Internal Server Error
           schema: {}
       summary: Delete item
+      tags:
+      - items
+  /items/identifier/{identifier}:
+    get:
+      description: Get item by identifier
+      parameters:
+      - description: identifier code
+        in: path
+        name: identifier
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/db.Item'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get item by identifier
       tags:
       - items
   /items/list:
