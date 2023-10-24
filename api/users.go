@@ -125,7 +125,7 @@ type loginUserResponse struct {
 // @Failure 400 {object} error "Bad Request"
 // @Failure 404 {object} error "Not Found"
 // @Failure 500 {object} error "Internal Server Error"
-// @Router /login [post]
+// @Router /users/login [post]
 func (server *Server) loginUser(ctx *gin.Context) {
 	var req loginUserRequest
 

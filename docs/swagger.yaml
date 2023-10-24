@@ -364,37 +364,6 @@ paths:
       summary: Update item
       tags:
       - items
-  /login:
-    post:
-      consumes:
-      - application/json
-      description: Login a user
-      parameters:
-      - description: login user request
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/api.loginUserRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/api.loginUserResponse'
-        "400":
-          description: Bad Request
-          schema: {}
-        "404":
-          description: Not Found
-          schema: {}
-        "500":
-          description: Internal Server Error
-          schema: {}
-      summary: Login a user
-      tags:
-      - users
   /users/create:
     post:
       consumes:
@@ -454,6 +423,37 @@ paths:
           description: Internal Server Error
           schema: {}
       summary: List users
+      tags:
+      - users
+  /users/login:
+    post:
+      consumes:
+      - application/json
+      description: Login a user
+      parameters:
+      - description: login user request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/api.loginUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.loginUserResponse'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Login a user
       tags:
       - users
   /users/update:

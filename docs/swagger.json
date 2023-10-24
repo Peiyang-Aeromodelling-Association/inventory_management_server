@@ -327,52 +327,6 @@
                 }
             }
         },
-        "/login": {
-            "post": {
-                "description": "Login a user",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Login a user",
-                "parameters": [
-                    {
-                        "description": "login user request",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/api.loginUserRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/api.loginUserResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {}
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {}
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {}
-                    }
-                }
-            }
-        },
         "/users/create": {
             "post": {
                 "description": "Create a user",
@@ -447,6 +401,52 @@
                             "items": {
                                 "$ref": "#/definitions/db.User"
                             }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/users/login": {
+            "post": {
+                "description": "Login a user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Login a user",
+                "parameters": [
+                    {
+                        "description": "login user request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.loginUserRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.loginUserResponse"
                         }
                     },
                     "400": {
