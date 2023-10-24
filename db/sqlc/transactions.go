@@ -230,3 +230,35 @@ func (transaction *Transaction) ListItemTx(ctx context.Context, arg ListItemPara
 
 	return result, execErr
 }
+
+type UpdateUserByUsernameParams struct {
+	UpdateUserParams
+	QueryUsername string
+}
+
+func (transaction *Transaction) UpdateUserByUsernameTx(ctx context.Context, arg UpdateUserByUsernameParams) (User, error) {
+	var result User
+	execErr := transaction.ExecTx(ctx, func(q *Queries) error {
+		// 1. get user by username
+		user, queryErr := q.GetUserByUsernameForUpdate(ctx, arg.QueryUsername)
+		if queryErr != nil {
+			return queryErr
+		}
+		// 2. update user
+		updateArgs := UpdateUserParams{
+			Uid:         user.Uid,
+			Username:    arg.Username,
+			Password:    arg.Password,
+			Description: arg.Description,
+			Activated:   arg.Activated,
+		}
+		var updateErr error
+		result, updateErr = q.UpdateUser(ctx, updateArgs)
+		if updateErr != nil {
+			return updateErr
+		}
+		return nil
+	})
+
+	return result, execErr
+}

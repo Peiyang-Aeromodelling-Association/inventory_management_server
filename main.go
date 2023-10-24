@@ -23,10 +23,10 @@ func init() {
 }
 
 func createAdmin(transaction *db.Transaction) (err error) {
-	// 1. delete admin if exists
 	var adminUser db.User
 	ctx := context.Background()
 	err = transaction.ExecTx(ctx, func(q *db.Queries) error {
+		// 1. find admin if exists
 		var queryErr error
 		adminUser, queryErr = transaction.GetUserByUsernameForUpdate(ctx, config.AdminUsername)
 		if queryErr != nil {
@@ -49,7 +49,7 @@ func createAdmin(transaction *db.Transaction) (err error) {
 				}
 			}
 		} else {
-			// update admin password if exists
+			// 2. or, update admin password if exists
 			hashedPassword, hashErr := util.HashPassword(config.AdminPassword)
 			if hashErr != nil {
 				log.Fatal("error hashing admin password: ", err)

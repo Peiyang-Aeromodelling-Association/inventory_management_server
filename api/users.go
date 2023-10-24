@@ -26,7 +26,7 @@ type createUserRequest struct {
 // @Success 200 {object} db.User "OK"
 // @Failure 400 {object} error "Bad Request"
 // @Failure 500 {object} error "Internal Server Error"
-// @Router /create-user [post]
+// @Router /users/create [post]
 func (server *Server) createUser(ctx *gin.Context) {
 	var req createUserRequest
 
@@ -75,7 +75,7 @@ type listUsersRequest struct {
 // @Failure 400 {object} error "Bad Request"
 // @Failure 404 {object} error "Not Found"
 // @Failure 500 {object} error "Internal Server Error"
-// @Router /list-users [get]
+// @Router /users/list [get]
 func (server *Server) listUsers(ctx *gin.Context) {
 	var req listUsersRequest
 
@@ -167,4 +167,57 @@ func (server *Server) loginUser(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, rsp)
+}
+
+type updateUserRequest struct {
+	Username    string `json:"username" binding:"required,alphanum"`
+	Password    string `json:"password" binding:"required,min=6"`
+	Description string `json:"description" binding:"omitempty"`
+}
+
+// updateUser
+// @Summary Update a user
+// @Description Update a user
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param request body updateUserRequest true "update user request"
+// @Success 200 {object} db.User
+// @Failure 400 {object} error "Bad Request"
+// @Failure 404 {object} error "Not Found"
+// @Failure 500 {object} error "Internal Server Error"
+// @Router /users/update [post]
+func (server *Server) updateUser(ctx *gin.Context) {
+	var req updateUserRequest
+
+	// check if the request body is valid
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	// update the user in the database via transaction
+	hashedPassword, err := util.HashPassword(req.Password)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	arg := db.UpdateUserByUsernameParams{
+		UpdateUserParams: db.UpdateUserParams{
+			Username:    req.Username,
+			Password:    hashedPassword,
+			Description: sql.NullString{String: req.Description, Valid: true},
+			Activated:   true,
+		},
+		QueryUsername: req.Username,
+	}
+
+	user, err := server.transaction.UpdateUserByUsernameTx(ctx, arg)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	// return OK
+	ctx.JSON(http.StatusOK, user)
 }

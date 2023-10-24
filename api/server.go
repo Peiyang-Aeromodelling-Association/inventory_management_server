@@ -49,13 +49,15 @@ func (server *Server) setupRouter() {
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	router.POST("/login", server.loginUser)
-	router.POST("/create-user", server.createUser)
+	router.POST("/users/login", server.loginUser)
 
 	authRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
 
-	authRoutes.GET("/list-users", server.listUsers)
-	authRoutes.GET("/list-items", server.listItems)
+	authRoutes.GET("/users/list", server.listUsers)
+	authRoutes.GET("/items/list", server.listItems)
+
+	authRoutes.POST("/users/create", server.createUser)
+	authRoutes.POST("/users/update", server.updateUser)
 
 	server.router = router
 }
