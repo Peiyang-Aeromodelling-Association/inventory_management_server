@@ -1,5 +1,9 @@
 # Build stage
 FROM golang:1.21-alpine3.18 AS builder
+
+ENV GO111MODULE=on \
+    GOPROXY=https://goproxy.cn,direct
+
 WORKDIR /app
 COPY . .
 RUN go build -o main main.go
@@ -13,8 +17,6 @@ COPY start.sh .
 COPY wait-for.sh .
 COPY db/migration ./db/migration
 RUN chmod +x *.sh && chmod +x main
-RUN pwd
-RUN ls -la
 
 EXPOSE 8080
 CMD [ "/app/main" ]
