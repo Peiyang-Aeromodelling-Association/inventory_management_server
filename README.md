@@ -35,4 +35,12 @@ make swagger
 make dockercompose
 ```
 
+该命令其实就是`docker-compose up -d`。
+
 如果出现意外，重启docker-compose也是相同的命令。一般来说，postgresql会自动重启。
+
+重新构建镜像：
+
+```bash
+docker-compose build
+```
