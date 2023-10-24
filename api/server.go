@@ -53,11 +53,13 @@ func (server *Server) setupRouter() {
 
 	authRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
 
-	authRoutes.GET("/users/list", server.listUsers)
-	authRoutes.GET("/items/list", server.listItems)
-
 	authRoutes.POST("/users/create", server.createUser)
 	authRoutes.POST("/users/update", server.updateUser)
+	authRoutes.GET("/users/list", server.listUsers)
+
+	authRoutes.POST("/items/create", server.createItem)
+	authRoutes.GET("/items/count", server.itemsCount)
+	authRoutes.GET("/items/list", server.listItems)
 
 	server.router = router
 }

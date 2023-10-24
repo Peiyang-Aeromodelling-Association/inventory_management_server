@@ -10,6 +10,19 @@ import (
 	"database/sql"
 )
 
+const countItems = `-- name: CountItems :one
+SELECT COUNT(*)
+FROM items
+WHERE deleted = FALSE
+`
+
+func (q *Queries) CountItems(ctx context.Context) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countItems)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createItem = `-- name: CreateItem :one
 INSERT INTO items (identifier_code, name, holder, modification_time, modifier, description, deleted)
 VALUES ($1, $2, $3, CURRENT_TIMESTAMP, $4, $5, FALSE)

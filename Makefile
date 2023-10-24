@@ -46,7 +46,11 @@ wipedb: migratedown migrateup
 server:
 	go run main.go
 
-.PHONY: help postgres createdb dropdb migrateup migratedown sqlc test wipedb server
+## swagger: Generate swagger
+swagger:
+	swag init --parseDependency --parseInternal --parseDepth 1
+
+.PHONY: help postgres createdb dropdb migrateup migratedown sqlc test wipedb server swagger
 
 .DEFAULT_GOAL := help
 all: help

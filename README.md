@@ -5,12 +5,24 @@
 
 ## 项目简介
 
-TODO
+一个go语言实现的物料管理系统后端，web框架使用gin，数据库使用postgresql。
 
 ## 开发
+
+查看makefile中的命令
+
+```bash
+make help
+```
+
+运行单元测试
+
+```bash
+make test
+```
 
 重新生成swagger文档
 
 ```bash
-swag init --parseDependency --parseInternal --parseDepth 1
+make swagger
 ```

@@ -9,6 +9,7 @@ import (
 )
 
 type Querier interface {
+	CountItems(ctx context.Context) (int64, error)
 	CreateHistory(ctx context.Context, arg CreateHistoryParams) (History, error)
 	CreateItem(ctx context.Context, arg CreateItemParams) (Item, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)

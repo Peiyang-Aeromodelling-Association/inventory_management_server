@@ -1,4 +1,19 @@
 definitions:
+  api.createItemRequest:
+    properties:
+      description:
+        type: string
+      holder:
+        type: integer
+      identifier_code:
+        type: string
+      name:
+        type: string
+    required:
+    - holder
+    - identifier_code
+    - name
+    type: object
   api.createUserRequest:
     properties:
       description:
@@ -50,6 +65,19 @@ definitions:
       username:
         type: string
     type: object
+  api.updateUserRequest:
+    properties:
+      description:
+        type: string
+      password:
+        minLength: 6
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
   db.Item:
     properties:
       deleted:
@@ -93,35 +121,49 @@ definitions:
 info:
   contact: {}
 paths:
-  /create-user:
+  /items/count:
+    get:
+      description: Count items
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Count items
+      tags:
+      - items
+  /items/create:
     post:
       consumes:
       - application/json
-      description: Create a user
+      description: Create item
       parameters:
-      - description: create user request
+      - description: create item request
         in: body
         name: request
         required: true
         schema:
-          $ref: '#/definitions/api.createUserRequest'
+          $ref: '#/definitions/api.createItemRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/db.User'
+            $ref: '#/definitions/db.Item'
         "400":
           description: Bad Request
           schema: {}
         "500":
           description: Internal Server Error
           schema: {}
-      summary: Create a user
+      summary: Create item
       tags:
-      - users
-  /list-item:
+      - items
+  /items/list:
     post:
       consumes:
       - application/json
@@ -151,7 +193,66 @@ paths:
       summary: List items
       tags:
       - items
-  /list-users:
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Login a user
+      parameters:
+      - description: login user request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/api.loginUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.loginUserResponse'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Login a user
+      tags:
+      - users
+  /users/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a user
+      parameters:
+      - description: create user request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/api.createUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/db.User'
+        "400":
+          description: Bad Request
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Create a user
+      tags:
+      - users
+  /users/list:
     get:
       consumes:
       - application/json
@@ -184,25 +285,25 @@ paths:
       summary: List users
       tags:
       - users
-  /login:
+  /users/update:
     post:
       consumes:
       - application/json
-      description: Login a user
+      description: Update a user
       parameters:
-      - description: login user request
+      - description: update user request
         in: body
         name: request
         required: true
         schema:
-          $ref: '#/definitions/api.loginUserRequest'
+          $ref: '#/definitions/api.updateUserRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/api.loginUserResponse'
+            $ref: '#/definitions/db.User'
         "400":
           description: Bad Request
           schema: {}
@@ -212,7 +313,7 @@ paths:
         "500":
           description: Internal Server Error
           schema: {}
-      summary: Login a user
+      summary: Update a user
       tags:
       - users
 swagger: "2.0"

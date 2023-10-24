@@ -59,3 +59,8 @@ FROM items
 WHERE deleted = FALSE
 ORDER BY item_id
 LIMIT $1 OFFSET $2;
+
+-- name: CountItems :one
+SELECT COUNT(*)
+FROM items
+WHERE deleted = FALSE;
