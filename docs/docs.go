@@ -248,11 +248,8 @@ const docTemplate = `{
             }
         },
         "/items/list": {
-            "post": {
+            "get": {
                 "description": "List items",
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -383,9 +380,6 @@ const docTemplate = `{
         "/users/list": {
             "get": {
                 "description": "List users",
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -395,13 +389,17 @@ const docTemplate = `{
                 "summary": "List users",
                 "parameters": [
                     {
-                        "description": "list users request",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/api.listUsersRequest"
-                        }
+                        "type": "integer",
+                        "description": "limit",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "offset",
+                        "name": "offset",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -577,20 +575,9 @@ const docTemplate = `{
         },
         "api.listItemRequest": {
             "type": "object",
-            "properties": {
-                "limit": {
-                    "type": "integer",
-                    "maximum": 100,
-                    "minimum": 1
-                },
-                "offset": {
-                    "type": "integer",
-                    "minimum": 0
-                }
-            }
-        },
-        "api.listUsersRequest": {
-            "type": "object",
+            "required": [
+                "limit"
+            ],
             "properties": {
                 "limit": {
                     "type": "integer",

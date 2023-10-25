@@ -43,16 +43,8 @@ definitions:
       offset:
         minimum: 0
         type: integer
-    type: object
-  api.listUsersRequest:
-    properties:
-      limit:
-        maximum: 100
-        minimum: 1
-        type: integer
-      offset:
-        minimum: 0
-        type: integer
+    required:
+    - limit
     type: object
   api.loginUserRequest:
     properties:
@@ -304,9 +296,7 @@ paths:
       tags:
       - items
   /items/list:
-    post:
-      consumes:
-      - application/json
+    get:
       description: List items
       parameters:
       - description: list item request
@@ -394,16 +384,17 @@ paths:
       - users
   /users/list:
     get:
-      consumes:
-      - application/json
       description: List users
       parameters:
-      - description: list users request
-        in: body
-        name: request
+      - description: limit
+        in: query
+        name: limit
         required: true
-        schema:
-          $ref: '#/definitions/api.listUsersRequest'
+        type: integer
+      - description: offset
+        in: query
+        name: offset
+        type: integer
       produces:
       - application/json
       responses:

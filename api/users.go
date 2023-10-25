@@ -59,18 +59,19 @@ func (server *Server) createUser(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, user)
 }
 
+// get from query params
 type listUsersRequest struct {
-	Limit  int32 `json:"limit" binding:"min=1,max=100"`
-	Offset int32 `json:"offset" binding:"min=0"`
+	Limit  int32 `form:"limit" binding:"required,min=1,max=100"`
+	Offset int32 `form:"offset" binding:"min=0"`
 }
 
 // listUsers
 // @Summary List users
 // @Description List users
 // @Tags users
-// @Accept json
 // @Produce json
-// @Param request body listUsersRequest true "list users request"
+// @Param limit query int true "limit"
+// @Param offset query int false "offset"
 // @Success 200 {array} db.User "OK"
 // @Failure 400 {object} error "Bad Request"
 // @Failure 404 {object} error "Not Found"
@@ -80,7 +81,7 @@ func (server *Server) listUsers(ctx *gin.Context) {
 	var req listUsersRequest
 
 	// check if the request query is valid
-	if err := ctx.ShouldBindJSON(&req); err != nil {
+	if err := ctx.ShouldBindQuery(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
